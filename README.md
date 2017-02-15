@@ -8,6 +8,8 @@ supported.
 ## Usage
 
 ```go
+package main
+
 import (
     wikiclient "github.com/cooper/go-wikiclient"
     "log"
