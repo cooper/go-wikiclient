@@ -32,8 +32,8 @@ func NewMessageWithID(cmd string, args messageArgs, id uint) Message {
 	return Message{cmd, args, id}
 }
 
-// fetch an arguments as a string
-func (msg Message) String(arg string) string {
+// fetch an argument as a string
+func (msg Message) Get(arg string) string {
 	iface, ok := msg.Args[arg]
 	if !ok {
 		return ""
@@ -48,8 +48,8 @@ func (msg Message) String(arg string) string {
 }
 
 // allows JSON unmarshal into a message
-func (msg Message) UnmarshalJSON(buf []byte) error {
-	parts := [...]interface{}{&msg.Command, &msg.Args, &msg.ID}
+func (msg *Message) UnmarshalJSON(buf []byte) error {
+	parts := []interface{}{&msg.Command, &msg.Args, &msg.ID}
 	need := len(parts)
 	if err := json.Unmarshal(buf, &parts); err != nil {
 		return err
@@ -61,7 +61,7 @@ func (msg Message) UnmarshalJSON(buf []byte) error {
 }
 
 // allows marshaling of messages
-func (msg Message) MarshalJSON() ([]byte, error) {
+func (msg *Message) MarshalJSON() ([]byte, error) {
 	parts := [...]interface{}{msg.Command, msg.Args, msg.ID}
 	return json.Marshal(parts)
 }
