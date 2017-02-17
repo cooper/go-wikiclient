@@ -59,7 +59,7 @@ func (msg Message) String(arg string) string {
 
 // allows JSON unmarshal into a message
 func (msg Message) UnmarshalJSON(buf []byte) error {
-	parts := []interface{}{&msg.Command, &msg.Args, &msg.ID}
+	parts := [...]interface{}{&msg.Command, &msg.Args, &msg.ID}
 	need := len(parts)
 	if err := json.Unmarshal(buf, &parts); err != nil {
 		return err
@@ -70,9 +70,8 @@ func (msg Message) UnmarshalJSON(buf []byte) error {
 	return nil
 }
 
-// translates the Message to JSON
-func (msg Message) ToJson() []byte {
-	ary := [...]interface{}{msg.Command, msg.Args, msg.ID}
-	json, _ := json.Marshal(ary)
-	return json
+// allows marshaling of messages
+func (msg Message) MarshalJSON() ([]byte, error) {
+	parts := [...]interface{}{msg.Command, msg.Args, msg.ID}
+	return json.Marshal(parts)
 }

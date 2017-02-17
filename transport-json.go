@@ -81,9 +81,15 @@ func (tr *jsonTransport) mainLoop() {
 
 		// outgoing messages
 		case msg := <-tr.write:
-			data := append(msg.ToJson(), '\n')
+			json, err := msg.MarshalJSON()
+			if err != nil {
+				tr.errors <- err
+				break
+			}
+			data := append(json, '\n')
 			if _, err := tr.writer.Write(data); err != nil {
 				tr.errors <- err
+				break
 			}
 
 		// incoming json data
