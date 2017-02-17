@@ -48,7 +48,7 @@ func (msg Message) Get(arg string) string {
 }
 
 // allows JSON unmarshal into a message
-func (msg *Message) UnmarshalJSON(buf []byte) error {
+func (msg Message) UnmarshalJSON(buf []byte) error {
 	parts := []interface{}{&msg.Command, &msg.Args, &msg.ID}
 	need := len(parts)
 	if err := json.Unmarshal(buf, &parts); err != nil {
@@ -61,7 +61,7 @@ func (msg *Message) UnmarshalJSON(buf []byte) error {
 }
 
 // allows marshaling of messages
-func (msg *Message) MarshalJSON() ([]byte, error) {
+func (msg Message) MarshalJSON() ([]byte, error) {
 	parts := [...]interface{}{msg.Command, msg.Args, msg.ID}
 	return json.Marshal(parts)
 }
