@@ -14,6 +14,7 @@ package wikiclient
 
 import (
 	"bufio"
+	"encoding/json"
 	"errors"
 	"io"
 )
@@ -81,20 +82,21 @@ func (tr *jsonTransport) mainLoop() {
 
 		// outgoing messages
 		case msg := <-tr.write:
-			json, err := msg.MarshalJSON()
+			data, err := json.Marshal(msg)
 			if err != nil {
 				tr.errors <- err
 				break
 			}
-			data := append(json, '\n')
+			data = append(data, '\n')
 			if _, err := tr.writer.Write(data); err != nil {
 				tr.errors <- err
 				break
 			}
 
-		// incoming json data
-		case json := <-tr.incoming:
-			msg, err := MessageFromJson(json)
+			// incoming json data
+		case data := <-tr.incoming:
+			var msg Message
+			err := json.Unmarshal(data, &msg)
 			if err != nil {
 				tr.errors <- errors.New("error creating message from JSON: " + err.Error())
 				break

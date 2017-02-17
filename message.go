@@ -32,16 +32,6 @@ func NewMessageWithID(cmd string, args messageArgs, id uint) Message {
 	return Message{cmd, args, id}
 }
 
-// creates a new Message from JSON data
-// this is ugly, but I don't think there's a nicer way to do it since we use
-// a JSON array and not an object?
-func MessageFromJson(data []byte) (msg Message, err error) {
-	if err = json.Unmarshal(data, &msg); err != nil {
-		return msg, err
-	}
-	return msg, nil
-}
-
 // fetch an arguments as a string
 func (msg Message) String(arg string) string {
 	iface, ok := msg.Args[arg]
