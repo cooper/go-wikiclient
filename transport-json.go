@@ -82,7 +82,7 @@ func (tr *jsonTransport) mainLoop() {
 
 		// outgoing messages
 		case msg := <-tr.write:
-			data, err := json.Marshal(msg)
+			data, err := json.Marshal(&msg)
 			if err != nil {
 				tr.errors <- err
 				break
