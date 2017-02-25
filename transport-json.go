@@ -93,7 +93,7 @@ func (tr *jsonTransport) mainLoop() {
 				break
 			}
 
-			// incoming json data
+		// incoming json data
 		case data := <-tr.incoming:
 			var msg Message
 			err := json.Unmarshal(data, &msg)

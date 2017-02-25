@@ -54,13 +54,21 @@ func (c Client) RequestMessage(req Message) (res Message, err error) {
 
 	// the transport is not authenticated
 	if !c.Session.ReadAccess {
-		err = c.sendMessage(NewMessage("wiki", map[string]interface{}{
+		var wikires Message
+		wikires, err = c.Request("wiki", map[string]interface{}{
 			"name":     c.Session.WikiName,
 			"password": c.Session.WikiPassword,
-		}))
+			"config":   true,
+		})
 		if err != nil {
 			return
 		}
+		info, ok := wikires.Args["config"].(map[string]interface{})
+		if !ok {
+			err = errors.New("wikiserver did not provide wiki configuration")
+			return
+		}
+		c.Session.Config = info
 		c.Session.ReadAccess = true
 	}
 

@@ -23,6 +23,9 @@ type Session struct {
 	ReadAccess  bool // true if authenticated for reading
 	WriteAccess bool // true if authenticated for writing
 
+	// wiki configuration values provided by the server
+	Config map[string]interface{}
+
 	// session ID used for write reauthentication
 	// perhaps we can generate this automatically
 	sessionID string
