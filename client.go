@@ -51,29 +51,7 @@ func (c Client) Request(command string, args messageArgs) (Message, error) {
 
 // send a message and block until we get its response
 func (c Client) RequestMessage(req Message) (res Message, err error) {
-
-	// the transport is not authenticated
-	if !c.Session.ReadAccess {
-		var wikires Message
-		wikires, err = c.Request("wiki", map[string]interface{}{
-			"name":     c.Session.WikiName,
-			"password": c.Session.WikiPassword,
-			"config":   true,
-		})
-		if err != nil {
-			return
-		}
-		info, ok := wikires.Args["config"].(map[string]interface{})
-		if !ok {
-			err = errors.New("wikiserver did not provide wiki configuration")
-			return
-		}
-		c.Session.Config = info
-		c.Session.ReadAccess = true
-	}
-
-	// TODO: if the transport is not write authenticated and we have
-	// credentials in the session, send them now
+	c.Connect()
 
 	// send
 	if err = c.sendMessage(req); err != nil {
@@ -108,4 +86,31 @@ func (c Client) sendMessage(msg Message) error {
 	}
 
 	return c.Transport.writeMessage(msg)
+}
+
+// authenticate for read/write access as necessary
+func (c Client) Connect() error {
+
+	// the transport is not authenticated
+	if !c.Session.ReadAccess {
+		wikires, err := c.Request("wiki", map[string]interface{}{
+			"name":     c.Session.WikiName,
+			"password": c.Session.WikiPassword,
+			"config":   true,
+		})
+		if err != nil {
+			return err
+		}
+		info, ok := wikires.Args["config"].(map[string]interface{})
+		if !ok {
+			return errors.New("wikiserver did not provide wiki configuration")
+		}
+		c.Session.Config = info
+		c.Session.ReadAccess = true
+	}
+
+	// TODO: if the transport is not write authenticated and we have
+	// credentials in the session, send them now
+
+	return nil
 }
