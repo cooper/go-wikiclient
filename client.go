@@ -103,6 +103,7 @@ func (c Client) sendMessage(msg Message) error {
 
 // authenticate for read/write access as necessary
 func (c Client) Connect() error {
+	c.Clean()
 
 	// the transport is not authenticated
 	if !c.Session.ReadAccess {
