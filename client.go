@@ -130,5 +130,5 @@ func (c Client) Connect() error {
 }
 
 func (c Client) Clean() {
-	c.Session.Clean(c.Transport)
+	c.Session.clean(c.Transport)
 }

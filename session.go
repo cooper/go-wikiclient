@@ -35,7 +35,7 @@ type Session struct {
 }
 
 // prepares the session for use with the given transport
-func (sess *Session) Clean(tr Transport) {
+func (sess *Session) clean(tr Transport) {
 
 	// nothing has changed
 	if sess.transportID == tr.ID() {
