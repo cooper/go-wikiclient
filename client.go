@@ -15,9 +15,10 @@ type Client struct {
 }
 
 // create a client and clean the session if necessary
-func NewClient(tr Transport, sess *Session, timeout time.Duration) Client {
-	sess.Clean(tr)
-	return Client{tr, sess, timeout}
+func NewClient(tr Transport, sess *Session, timeout time.Duration) (c Client) {
+	c = Client{tr, sess, timeout}
+	c.Clean()
+	return
 }
 
 // display a page
@@ -125,4 +126,8 @@ func (c Client) Connect() error {
 	// credentials in the session, send them now
 
 	return nil
+}
+
+func (c Client) Clean() {
+	c.Session.Clean(c.Transport)
 }
