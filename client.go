@@ -45,13 +45,25 @@ func (c Client) DisplayCategoryPosts(categoryName string, pageN int) (Message, e
 	})
 }
 
+// send a message and block until we get its response
 func (c Client) Request(command string, args messageArgs) (Message, error) {
 	return c.RequestMessage(NewMessage(command, args))
 }
 
 // send a message and block until we get its response
-func (c Client) RequestMessage(req Message) (res Message, err error) {
-	c.Connect()
+func (c Client) RequestMessage(req Message) (Message, error) {
+	return c.requestGeneric(false, req)
+}
+
+// same as Request() except that it does not Connect()
+func (c Client) requestConnecting(command string, args messageArgs) (Message, error) {
+	return c.requestGeneric(true, NewMessage(command, args))
+}
+
+func (c Client) requestGeneric(connecting bool, req Message) (res Message, err error) {
+	if !connecting {
+		c.Connect()
+	}
 
 	// send
 	if err = c.sendMessage(req); err != nil {
@@ -93,7 +105,7 @@ func (c Client) Connect() error {
 
 	// the transport is not authenticated
 	if !c.Session.ReadAccess {
-		wikires, err := c.Request("wiki", map[string]interface{}{
+		wikires, err := c.requestConnecting("wiki", map[string]interface{}{
 			"name":     c.Session.WikiName,
 			"password": c.Session.WikiPassword,
 			"config":   true,

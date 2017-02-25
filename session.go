@@ -45,4 +45,5 @@ func (sess *Session) Clean(tr Transport) {
 	sess.transportID = tr.ID()
 	sess.ReadAccess = false
 	sess.WriteAccess = false
+	sess.Config = nil
 }
