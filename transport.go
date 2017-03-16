@@ -5,12 +5,13 @@ var transportID uint
 
 // used outside of transport
 type Transport interface {
-	Errors() <-chan error           // error channel
-	readMessages() <-chan Message   // messages read channel
-	writeMessage(msg Message) error // write a message
-	Connect() error                 // connect to wikiserver
-	Dead() bool                     // true if not connected
-	ID() uint                       // transport identifier
+	Errors() <-chan error            // error channel
+	readMessages() <-chan Message    // messages read channel
+	writeMessage(msg Message) error  // write a message
+	SelectWiki(wikiName string) bool // set selected wiki name
+	Connect() error                  // connect to wikiserver
+	Dead() bool                      // true if not connected
+	ID() uint                        // transport identifier
 }
 
 // base for all transports
@@ -18,6 +19,7 @@ type transport struct {
 	errors    chan error   // transport errors
 	read      chan Message // read messages waiting to be processed
 	write     chan Message // messages waiting to be written
+	selected  string       // selected wiki name
 	connected bool         // transport is active
 	id        uint
 }
@@ -29,6 +31,7 @@ func createTransport() *transport {
 		make(chan error),
 		make(chan Message),
 		make(chan Message),
+		"",
 		false,
 		transportID,
 	}
@@ -49,6 +52,15 @@ func (tr *transport) readMessages() <-chan Message {
 func (tr *transport) writeMessage(msg Message) error {
 	tr.write <- msg
 	return nil
+}
+
+// set selected wiki name. return true if changed
+func (tr *transport) SelectWiki(wikiName string) bool {
+	if wikiName == tr.selected {
+		return false
+	}
+	tr.selected = wikiName
+	return true
 }
 
 // returns a channel of read/write errors

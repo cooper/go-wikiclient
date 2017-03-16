@@ -121,10 +121,21 @@ func (c Client) Connect() error {
 		}
 		c.Session.Config = info
 		c.Session.ReadAccess = true
+		c.Transport.SelectWiki(c.Session.WikiName)
 	}
 
 	// TODO: if the transport is not write authenticated and we have
 	// credentials in the session, send them now
+
+	// this wiki was not selected, so send select
+	if c.Transport.SelectWiki(c.Session.WikiName) {
+		_, err := c.requestConnecting("select", map[string]interface{}{
+			"name": c.Session.WikiName,
+		})
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
