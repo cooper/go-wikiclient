@@ -37,7 +37,7 @@ func (tr *RunTransport) Connect() error {
 	rw := bufio.NewReadWriter(&reader, &writer)
 
 	// create command
-	cmd := exec.Command("wikiserver", "--std", tr.configPath)
+	cmd := exec.Command("./wikiserver", "--std", tr.configPath)
 	cmd.Dir = tr.wikifierPath
 	cmd.Stdout = rw
 	cmd.Stdin = rw
