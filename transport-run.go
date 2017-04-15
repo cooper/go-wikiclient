@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"os/exec"
     "os"
+    "path/filepath"
 )
 
 type RunTransport struct {
@@ -30,9 +31,15 @@ func NewRunTransport(wikifierPath, configPath string) (*RunTransport, error) {
 // connect
 func (tr *RunTransport) Connect() error {
 
-
+    // try to find the absolute path of the config
+    var cfg string
+    var err error
+    if cfg, err = filepath.Abs(tr.configPath); err != nil {
+        cfg = tr.configPath
+    }
+    
 	// create command
-	cmd := exec.Command("./wikiserver", "--std", tr.configPath)
+	cmd := exec.Command("./wikiserver", "--std", cfg)
 	cmd.Dir = tr.wikifierPath
 	tr.cmd = cmd
 
