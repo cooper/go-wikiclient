@@ -7,6 +7,7 @@ package wikiclient
 import (
 	"bufio"
 	"os/exec"
+    "os"
 )
 
 type RunTransport struct {
@@ -46,6 +47,9 @@ func (tr *RunTransport) Connect() error {
     }
     tr.reader = bufio.NewReader(stdout)
 	tr.writer = stdin
+
+    // redirect stderr to ours
+    cmd.Stderr = os.Stderr
 
 	// start the command
 	if err := cmd.Start(); err != nil {
