@@ -53,15 +53,15 @@ func (c Client) Request(command string, args messageArgs) (Message, error) {
 
 // send a message and block until we get its response
 func (c Client) RequestMessage(req Message) (Message, error) {
-	return c.requestGeneric(false, req)
+	return c.requestGeneric(false, req, false)
 }
 
 // same as Request() except that it does not Connect()
 func (c Client) requestConnecting(command string, args messageArgs) (Message, error) {
-	return c.requestGeneric(true, NewMessage(command, args))
+	return c.requestGeneric(true, NewMessage(command, args), true)
 }
 
-func (c Client) requestGeneric(connecting bool, req Message) (res Message, err error) {
+func (c Client) requestGeneric(connecting bool, req Message, neverTimeout bool) (res Message, err error) {
 	if !connecting {
 		c.Connect()
 	}
@@ -69,6 +69,12 @@ func (c Client) requestGeneric(connecting bool, req Message) (res Message, err e
 	// send
 	if err = c.sendMessage(req); err != nil {
 		return
+	}
+	
+	// timeout channel
+	var timeout <-chan time.Time
+	if !neverTimeout {
+		timeout = time.After(c.Timeout)
 	}
 
 	// await the response, or give up after the timeout
@@ -84,7 +90,7 @@ func (c Client) requestGeneric(connecting bool, req Message) (res Message, err e
 		err = errors.New("Got response with incorrect message ID")
 		return
 
-	case <-time.After(c.Timeout):
+	case <-timeout:
 		err = errors.New("Timed out")
 		return
 	}
