@@ -29,19 +29,23 @@ func NewRunTransport(wikifierPath, configPath string) (*RunTransport, error) {
 // connect
 func (tr *RunTransport) Connect() error {
 
-	// create readwriter for stdio
-	var reader bufio.Reader
-	var writer bufio.Writer
-	tr.reader = &reader
-	tr.writer = &writer
-	rw := bufio.NewReadWriter(&reader, &writer)
 
 	// create command
 	cmd := exec.Command("./wikiserver", "--std", tr.configPath)
 	cmd.Dir = tr.wikifierPath
-	cmd.Stdout = rw
-	cmd.Stdin = rw
 	tr.cmd = cmd
+
+    // create stdio pipe
+    stdout, err := cmd.StdoutPipe()
+    if err != nil {
+        return err
+    }
+    stdin, err := cmd.StdinPipe()
+    if err != nil {
+        return err
+    }
+    tr.reader = bufio.NewReader(stdout)
+	tr.writer = stdin
 
 	// start the command
 	if err := cmd.Start(); err != nil {
