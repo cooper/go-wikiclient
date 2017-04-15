@@ -6,9 +6,9 @@ package wikiclient
 
 import (
 	"bufio"
+	"os"
 	"os/exec"
-    "os"
-    "path/filepath"
+	"path/filepath"
 )
 
 type RunTransport struct {
@@ -31,32 +31,32 @@ func NewRunTransport(wikifierPath, configPath string) (*RunTransport, error) {
 // connect
 func (tr *RunTransport) Connect() error {
 
-    // try to find the absolute path of the config
-    var cfg string
-    var err error
-    if cfg, err = filepath.Abs(tr.configPath); err != nil {
-        cfg = tr.configPath
-    }
-    
+	// try to find the absolute path of the config
+	var cfg string
+	var err error
+	if cfg, err = filepath.Abs(tr.configPath); err != nil {
+		cfg = tr.configPath
+	}
+
 	// create command
 	cmd := exec.Command("./wikiserver", "--std", cfg)
 	cmd.Dir = tr.wikifierPath
 	tr.cmd = cmd
 
-    // create stdio pipe
-    stdout, err := cmd.StdoutPipe()
-    if err != nil {
-        return err
-    }
-    stdin, err := cmd.StdinPipe()
-    if err != nil {
-        return err
-    }
-    tr.reader = bufio.NewReader(stdout)
+	// create stdio pipe
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return err
+	}
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+	tr.reader = bufio.NewReader(stdout)
 	tr.writer = stdin
 
-    // redirect stderr to ours
-    cmd.Stderr = os.Stderr
+	// redirect stderr to ours
+	cmd.Stderr = os.Stderr
 
 	// start the command
 	if err := cmd.Start(); err != nil {

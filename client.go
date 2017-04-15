@@ -70,7 +70,7 @@ func (c Client) requestGeneric(connecting bool, req Message, neverTimeout bool) 
 	if err = c.sendMessage(req); err != nil {
 		return
 	}
-	
+
 	// timeout channel
 	var timeout <-chan time.Time
 	if !neverTimeout {
