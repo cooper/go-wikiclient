@@ -40,7 +40,7 @@ func (tr *RunTransport) Connect() error {
 	}
 
 	// create command
-	cmd := exec.Command("./wikiserver", "--std", cfg)
+	cmd := exec.Command(tr.wikifierPath + "/wikiserver", "--std", cfg)
 	cmd.Dir = tr.wikifierPath
 	tr.cmd = cmd
 
