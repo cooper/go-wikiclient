@@ -6,10 +6,10 @@ package wikiclient
 
 import (
 	"bufio"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"log"
 )
 
 type RunTransport struct {
@@ -40,7 +40,7 @@ func (tr *RunTransport) Connect() error {
 	}
 
 	// create command
-	cmd := exec.Command(tr.wikifierPath + "/wikiserver", "--std", cfg)
+	cmd := exec.Command(tr.wikifierPath+"/wikiserver", "--std", cfg)
 	cmd.Dir = tr.wikifierPath
 	tr.cmd = cmd
 
@@ -72,6 +72,9 @@ func (tr *RunTransport) Connect() error {
 
 func (tr *RunTransport) startLoops() {
 	// TODO: run continuously
-	go tr.cmd.Wait()
+	go func() {
+		tr.cmd.Wait()
+		log.Fatal("wikiserver exited!")
+	}()
 	tr.jsonTransport.startLoops()
 }
