@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"log"
 )
 
 type RunTransport struct {
@@ -60,6 +61,7 @@ func (tr *RunTransport) Connect() error {
 
 	// start the command
 	if err := cmd.Start(); err != nil {
+		log.Println(tr.wikifierPath + "/wikiserver")
 		return err
 	}
 
