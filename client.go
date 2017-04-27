@@ -35,6 +35,16 @@ func (c Client) DisplayImage(imageName string, width, height int) (Message, erro
 	})
 }
 
+// display an image without regard to dimension restrictions
+func (c Client) DisplayImageOverride(imageName string, width, height int) (Message, error) {
+	return c.Request("image", map[string]interface{}{
+		"name":         imageName,
+		"width":        strconv.Itoa(width),
+		"height":       strconv.Itoa(height),
+		"gen_override": true,
+	})
+}
+
 // display category posts
 func (c Client) DisplayCategoryPosts(categoryName string, pageN int) (Message, error) {
 	if pageN <= 0 {
