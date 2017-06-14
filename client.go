@@ -3,6 +3,7 @@ package wikiclient
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -52,7 +53,7 @@ func (c Client) DisplayCategoryPosts(categoryName string, pageN int) (Message, e
 	}
 	return c.Request("cat_posts", map[string]interface{}{
 		"name":   categoryName,
-		"page_n": string(pageN),
+		"page_n": fmt.Sprintf("%d", pageN),
 	})
 }
 
